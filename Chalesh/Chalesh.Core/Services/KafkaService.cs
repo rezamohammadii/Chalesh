@@ -29,7 +29,7 @@ namespace Chalesh.Core.Services
                     Value = message
                 };
 
-                await producer.ProduceAsync("my-topic", msg);
+                await producer.ProduceAsync(topic, msg);
             }
             return true;
         }
