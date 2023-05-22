@@ -1,0 +1,18 @@
+{
+    "ProducerModel": {
+        "id": 23,
+        "engine": "Regex",
+        "messageLenght": 10,
+        "isValid": true
+    },
+    "ConsumerModel": {
+        "id": 23,
+        "sender": "Regex",
+        "messgae": ""
+    },
+    "MainService": {
+        "id": 23,
+        "systemTime": "",
+        "numberofConnectedClients": 10
+    }
+}
