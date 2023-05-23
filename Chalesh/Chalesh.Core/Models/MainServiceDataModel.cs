@@ -15,7 +15,7 @@ namespace Chalesh.Core.Models
     public class MainServiceDataModelOut
     {
         public bool IsEnabled { get; set; }
-        public DateTime ExpirationTime { get; set; }
+        public int ExpirationTime { get; set; } // Based on sec 
         public int NumberOfActiveClients { get; set; }
     }
 }
