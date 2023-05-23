@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chalesh.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -10,6 +11,7 @@ namespace Chalesh.Core.Utils
 {
     public class CodeFactory
     {
+        public static MainServiceDataModelOut? modelOut;
         public static Guid GenerateGuidFromMacAddress()
         {
             var mac = NetworkInterface.GetAllNetworkInterfaces()
