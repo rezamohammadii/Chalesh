@@ -1,5 +1,7 @@
 ﻿using Chalesh.Core.Models;
 using Chalesh.Core.Utils;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace GrpcService1.Services
 {
@@ -27,27 +29,64 @@ namespace GrpcService1.Services
             try
             {
                 // Create MainService Data Model For Send Request Main Service
-                MainServiceDataModel mainService = new MainServiceDataModel();
+                MainServiceDataModelIn mainService = new MainServiceDataModelIn();
 
                 mainService.Id = CodeFactory.GenerateGuidFromMacAddress();
                 mainService.SystemTime = DateTime.Now;
                 mainService.NumberofConnectedClients = _cfg.GetValue<int>("NumberofConnectedClients");
 
-                using var client = new HttpClient();
+                var expectedThumbprint = _cfg.GetValue<string>("Thumbprint");
+                int maxRetries = 10;
+                int retryCount = 0;
+                bool success = false;
+                string thumbPrint = "";
+                // It will try 10 times until it is OK 
+                while (retryCount < maxRetries && !success)
+                {
+                    var httpClientHandler = new HttpClientHandler();
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, errors) =>
+                    {
+                        // Get thumbprint from main service
+                        thumbPrint = cert!.Thumbprint;
+                        return true;
+                    };
+                    var client = new HttpClient();
 
-                // Set the URL for the POST request
-                var url = _cfg.GetValue<string>("MainServeiceAddress");
+                    // Set the URL for the POST request
+                    var url = _cfg.GetValue<string>("MainServeiceAddress");
 
-                // Create a new HttpRequestMessage with the POST method
-                using var request = new HttpRequestMessage(HttpMethod.Post, url);
+                    // Create a new HttpRequestMessage with the POST method
+                    var request = new HttpRequestMessage(HttpMethod.Post, url);
 
-                // Add any necessary headers or content to the request here
-                request.Content = new StringContent("my post data");
+                    // Add any necessary headers or content to the request here
+                    request.Content = new StringContent(mainService.ToString()!, Encoding.UTF8, "application/json");
 
-                // Send the POST request and wait for the response
-                var response = await client.SendAsync(request);
+                    // Send the POST request and wait for the response
+                    var response = await client.SendAsync(request);
 
-                // Do something with the response here if needed
+                    // Do something with the response here if needed
+                    if (response.StatusCode== System.Net.HttpStatusCode.OK)
+                    {
+
+                        // Check validate thumbprint
+                        if (thumbPrint == expectedThumbprint)
+                        {
+                            Console.WriteLine("SSL thumbprint matches!");
+
+                            var responseContent  = await response.Content.ReadAsStringAsync();
+                        }
+                        else
+                        {
+                            Console.WriteLine("SSL thumbprint does not match!");
+                        }
+                        success = true;
+                    }
+                    else
+                    {
+                        retryCount++;
+                    }
+                }
+
             }
             catch (Exception ex)
             {
