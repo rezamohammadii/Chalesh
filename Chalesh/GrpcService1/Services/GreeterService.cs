@@ -1,3 +1,4 @@
+using Chalesh.Core.Models;
 using Grpc.Core;
 using GrpcService1;
 
@@ -11,12 +12,13 @@ namespace GrpcService1.Services
             _logger = logger;
         }
 
-        public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
+        public override async Task BidirectionalStream(IAsyncStreamReader<HelloRequest> requestStream, IServerStreamWriter<HelloReply> responseStream, ServerCallContext context)
         {
-            return Task.FromResult(new HelloReply
+            await foreach (var request in requestStream.ReadAllAsync())
             {
-                Message = "Hello " + request.Name
-            });
-        }      
+                var response = new HelloReply { Message = $"Received '{request.Name}'" };
+                await responseStream.WriteAsync(response);
+            }
+        }
     }
 }

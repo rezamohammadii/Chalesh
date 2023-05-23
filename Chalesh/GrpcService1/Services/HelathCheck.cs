@@ -1,5 +1,6 @@
 ﻿using Chalesh.Core.Models;
 using Chalesh.Core.Utils;
+using Newtonsoft.Json;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -40,6 +41,7 @@ namespace GrpcService1.Services
                 int retryCount = 0;
                 bool success = false;
                 string thumbPrint = "";
+
                 // It will try 10 times until it is OK 
                 while (retryCount < maxRetries && !success)
                 {
@@ -74,6 +76,8 @@ namespace GrpcService1.Services
                             Console.WriteLine("SSL thumbprint matches!");
 
                             var responseContent  = await response.Content.ReadAsStringAsync();
+                            var model = JsonConvert.DeserializeObject<MainServiceDataModelOut>(responseContent);
+                            CodeFactory.modelOut = model;
                         }
                         else
                         {
