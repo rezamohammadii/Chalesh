@@ -10,10 +10,12 @@ namespace Chalesh.Controllers
 
 
         private readonly ILogger<MainController> _logger;
+        private readonly IConfiguration _cfg;
 
-        public MainController(ILogger<MainController> logger)
+        public MainController(ILogger<MainController> logger, IConfiguration cfg)
         {
             _logger = logger;
+            _cfg = cfg;
         }
 
         [HttpPost]
@@ -21,9 +23,9 @@ namespace Chalesh.Controllers
         {
             MainServiceDataModelOut modelOut = new MainServiceDataModelOut()
             {
-                ExpirationTime = 1800,
-                IsEnabled = true,
-                NumberOfActiveClients = 3
+                ExpirationTime = _cfg.GetValue<int>("ExpirationTime"),
+                IsEnabled = _cfg.GetValue<bool>("IsEnabled"),
+                NumberOfActiveClients = _cfg.GetValue<int>("NumberOfActiveClients"),
             };
 
             return Ok(modelOut);
