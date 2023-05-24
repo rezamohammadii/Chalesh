@@ -1,24 +1,34 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Chalesh.Core.Utils;
 using Grpc.Net.Client;
+
 using GrpcClient;
-string data = @"{
-        ""Id"":""UniqueId"",
-        ""Type"":""EngineType""}";
-using var chanel = GrpcChannel.ForAddress("https://localhost:5003", new GrpcChannelOptions
+
+Console.WriteLine("Press any key to exit...");
+
+using var chanel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
 {
     HttpHandler = new SocketsHttpHandler
     {
+        // Automatic handle request online client connected to server based MaxConnectionsPerServer
         EnableMultipleHttp2Connections = true,
-        MaxConnectionsPerServer = CodeFactory.modelOut.NumberOfActiveClients,
-        ConnectTimeout = TimeSpan.FromSeconds(CodeFactory.modelOut.ExpirationTime)
-    }
-});
-var client = new Greeter.GreeterClient(chanel);
-var reply = await client.SayHelloAsync(
-    new HelloRequest { Name = data });
 
-// Recevied message from service 1
-Console.WriteLine("Responsing: " + reply.Message);
+        // Set Max Connection from receive data main service 
+        MaxConnectionsPerServer = CodeFactory.modelOut.NumberOfActiveClients,
+
+        // After next time cloese connection 
+        ConnectTimeout = TimeSpan.FromSeconds(CodeFactory.modelOut.ExpirationTime),
+
+    },
+
+    // Http Connection is no accept
+    DisposeHttpClient = true,
+
+});
+var client = new SendRequestToClient.SendRequestToClientClient(chanel);
+var reply = client.BidirectionalStream( new HelloRequest { Message = "clien-1" });
+
+//// Recevied message from service 1
+//   Console.WriteLine("Responsing: " + reply.Message);
 Console.WriteLine("Press any key to exit...");
 Console.ReadKey();
