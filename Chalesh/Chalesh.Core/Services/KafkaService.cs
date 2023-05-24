@@ -1,4 +1,7 @@
-﻿using Confluent.Kafka;
+﻿using Chalesh.Core.Models;
+using Chalesh.Core.Utils;
+using Confluent.Kafka;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +11,8 @@ using System.Threading.Tasks;
 namespace Chalesh.Core.Services
 {
     public class KafkaService
-    {  
-        
+    {
+
         public ProducerConfig KafkaConfig()
         {
             var config = new ProducerConfig
@@ -34,18 +37,22 @@ namespace Chalesh.Core.Services
             return true;
         }
 
-        public void ConsumerAsync(string topic, string message)
+        public void ConsumerAsync(string topic)
         {
-            using (var consumer = new ConsumerBuilder<Ignore, string>(KafkaConfig()).Build())
+            using (var consumer = new ConsumerBuilder<Ignore, string> (KafkaConfig()).Build())
             {
                 consumer.Subscribe(topic);
+                DateTime startTime = DateTime.Now;
 
-                while (true)
+                // It runs in a loop for thirty seconds and extracts the data in the queue
+                while ((DateTime.Now - startTime).TotalSeconds < 30)
                 {
                     var result = consumer.Consume();
-
+                    var data = JsonConvert.DeserializeObject<ConsumerModel>(result.Message.Value);
+                    CodeFactory.ConsumerModels = data;
                     Console.WriteLine($"Consumed message '{result.Message.Value}' at: '{result.TopicPartitionOffset}'.");
                 }
+               
             }
         }
 
