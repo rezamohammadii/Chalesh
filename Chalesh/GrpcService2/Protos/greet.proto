@@ -4,32 +4,37 @@ option csharp_namespace = "GrpcService2";
 
 package greet;
 
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
-  rpc BidirectionalStream(stream HelloRequest) returns (stream HelloReply);
-}
+// The first request service 2 to service 1
 service ValidService2 {
     rpc FirstRequestService2(Service2SendData) returns (Empty);
 }
+// Subsequent service2 requests to service1
+service SendRequestService2 {
+    rpc RequestService2(Empty) returns (DataService1ToServic2);
+}
+
+// Subsequent service1 requests to service2
+service SendRequestService1 {
+    rpc RequestService1(DataService2ToServic1) returns (HelloReply);
+}
+
 message Service2SendData{
     string id = 1;
     string type = 2;
 }
 message DataService1ToServic2{
     int32 id = 123;
-    string engine = 1234;
-    string messageLenght = 10;
-    bool isValid = 1;
-}
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+    string sender = 1234;
+    string message = 10;
 }
 
-// The response message containing the greetings.
+message DataService2ToServic1{
+    int32 id = 123;
+    string engine = 1234;
+    string MessageLenght = 10;
+    bool isValid = 1;
+}
 message HelloReply {
   string message = 1;
 }
-
 message Empty {}
