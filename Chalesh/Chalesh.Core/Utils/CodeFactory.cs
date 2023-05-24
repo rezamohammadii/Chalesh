@@ -12,6 +12,7 @@ namespace Chalesh.Core.Utils
 {
     public class CodeFactory
     {
+        // Global variable 
         public static MainServiceDataModelOut? modelOut;
         public static ConcurrentQueue<Service2DetailModel>? Service2Detail;
         public static ConsumerModel? ConsumerModels;

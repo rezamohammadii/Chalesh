@@ -24,7 +24,7 @@ namespace Chalesh.Core.Services
         }
         public async Task<bool> ProduceAsync(string topic, string message)
         {
-
+            // Producer func 
             using (var producer = new ProducerBuilder<Null, string>(KafkaConfig()).Build())
             {
                 var msg = new Message<Null, string>
