@@ -8,9 +8,9 @@ namespace GrpcService1.Services
 {
     public class HelathCheck
     {
-        private readonly ILogger<GreeterService> _logger;
+        private readonly ILogger<HelathCheck> _logger;
         private readonly IConfiguration _cfg;
-        public HelathCheck(ILogger<GreeterService> logger, IConfiguration cfg)
+        public HelathCheck(ILogger<HelathCheck> logger, IConfiguration cfg)
         {
             _logger = logger;
             _cfg = cfg;
@@ -36,6 +36,7 @@ namespace GrpcService1.Services
                 mainService.SystemTime = DateTime.Now;
                 mainService.NumberofConnectedClients = _cfg.GetValue<int>("NumberofConnectedClients");
 
+                // Read Thumbprint from setting file
                 var expectedThumbprint = _cfg.GetValue<string>("Thumbprint");
                 int maxRetries = 10;
                 int retryCount = 0;
@@ -75,8 +76,13 @@ namespace GrpcService1.Services
                         {
                             Console.WriteLine("SSL thumbprint matches!");
 
+                            // Get response from main service
                             var responseContent  = await response.Content.ReadAsStringAsync();
+
+                            // Convert received data (string) format in MainServiceDataModelOut object
                             var model = JsonConvert.DeserializeObject<MainServiceDataModelOut>(responseContent);
+
+                            // Pass DeserializeObject to global object
                             CodeFactory.modelOut = model;
                         }
                         else

@@ -10,11 +10,13 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-using var chanel = GrpcChannel.ForAddress("https://localhost:5001");
-var client  = new Greeter.
+
 // Configure the HTTP request pipeline.
-//app.MapGrpcService<GreeterService>();
-//app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-
-
+app.MapGrpcService<FirstRequestService>();
+app.MapGrpcService<HandeleRequestClient>();
+app.MapGrpcService<HandleRequestService>();
+app.MapGrpcService<HandleRequestService2>();
+app.MapGet("/", () => "Ready for connected client and service");
 app.Run();
+// Press Ctrl+C for shutdown service 
+app.WaitForShutdown();
