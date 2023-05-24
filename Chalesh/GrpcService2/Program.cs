@@ -1,17 +1,24 @@
-using GrpcService2.Services;
+﻿// See https://aka.ms/new-console-template for more information
+using Chalesh.Core.Utils;
+using Grpc.Net.Client;
+using GrpcService2;
 
-var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("Hello, World!");
 
-// Additional configuration is required to successfully run gRPC on macOS.
-// For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+var handler = new HttpClientHandler();
+handler.SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls11 | System.Security.Authentication.SslProtocols.Tls;
+handler.ClientCertificateOptions = ClientCertificateOption.Automatic;
+handler.UseProxy = false;
+var firstMessage = new Service2SendData
+{
+    Id = CodeFactory.GenerateGuidFromMacAddress().ToString(),
+    Type = "EngineType"
+};
 
-// Add services to the container.
-builder.Services.AddGrpc();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-
-app.Run();
+var channel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
+{
+    HttpHandler = handler,
+    DisposeHttpClient = true,
+});
+var client1 = new ValidService2.ValidService2Client(channel);
+var serverReply = await client1.FirstRequestService2Async(firstMessage);
