@@ -21,7 +21,7 @@ namespace Chalesh.Controllers
         {
             MainServiceDataModelOut modelOut = new MainServiceDataModelOut()
             {
-                ExpirationTime = DateTime.Now.AddHours(3),
+                ExpirationTime = 1800,
                 IsEnabled = true,
                 NumberOfActiveClients = 3
             };
