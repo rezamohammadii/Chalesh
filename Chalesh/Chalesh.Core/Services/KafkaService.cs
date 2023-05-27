@@ -1,6 +1,7 @@
 ﻿using Chalesh.Core.Models;
 using Chalesh.Core.Utils;
 using Confluent.Kafka;
+using Confluent.Kafka.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,51 +11,41 @@ using System.Threading.Tasks;
 
 namespace Chalesh.Core.Services
 {
-    public class KafkaService
+    public class KafkaService : IKafkaService
     {
 
-        public ProducerConfig KafkaConfig()
+        public void Listen(Action<string> message, string topic)
         {
-            var config = new ProducerConfig
+            var config = new Dictionary<string, object>
             {
-                BootstrapServers = "localhost:9092",
-                ClientId = "my-app"
+                {"group.id", "grpc_consumer" },
+                {"bootstrap.servers","localhost:9092" },
+                {"enable.auto.commit", "false" }
             };
-            return config;
-        }
-        public async Task<bool> ProduceAsync(string topic, string message)
-        {
-            // Producer func 
-            using (var producer = new ProducerBuilder<Null, string>(KafkaConfig()).Build())
-            {
-                var msg = new Message<Null, string>
-                {
-                    Value = message
-                };
-
-                await producer.ProduceAsync(topic, msg);
-            }
-            return true;
-        }
-
-        public void ConsumerAsync(string topic)
-        {
-            using (var consumer = new ConsumerBuilder<Ignore, string> (KafkaConfig()).Build())
+            using (var consumer = new Consumer<Null, string>(config, null, new StringDeserializer(Encoding.UTF8)))
             {
                 consumer.Subscribe(topic);
-                DateTime startTime = DateTime.Now;
-
-                // It runs in a loop for thirty seconds and extracts the data in the queue
-                while ((DateTime.Now - startTime).TotalSeconds < 30)
+                consumer.OnMessage += (_, msg) =>
                 {
-                    var result = consumer.Consume();
-                    var data = JsonConvert.DeserializeObject<ConsumerModel>(result.Message.Value);
-                    CodeFactory.ConsumerModels = data;
-                    Console.WriteLine($"Consumed message '{result.Message.Value}' at: '{result.TopicPartitionOffset}'.");
-                }
-               
+                    message(msg.Value);
+                };
             }
         }
 
+        public async void Producer(string topic, string message)
+        {
+            var config = new Dictionary<string, object>
+            {
+                {"bootstrap.servers","localhost:9092" },
+            };
+            // Producer func 
+            using (var producer = new Producer<Null, string>(config, null, new StringSerializer(Encoding.UTF8)))
+            {
+
+                await producer.ProduceAsync(topic, null, message);
+                producer.Flush(10);
+
+            }
+        }
     }
 }
