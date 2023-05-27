@@ -19,7 +19,7 @@ namespace GrpcService1.Services
                 // 
                 KafkaService kafkaService = new KafkaService();
                 string topicName = _cfg.GetValue<string>("TopicName");
-                await kafkaService.ProduceAsync(topicName, request.ToString());
+                kafkaService.Producer(topicName, request.ToString());
             }
             return await Task.FromResult(new HelloReply
             {

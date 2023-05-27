@@ -6,7 +6,7 @@ using GrpcClient;
 
 Console.WriteLine("Press any key to exit...");
 
-using var chanel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
+using var chanel = GrpcChannel.ForAddress("https://localhost:7146", new GrpcChannelOptions
 {
     HttpHandler = new SocketsHttpHandler
     {
@@ -26,9 +26,10 @@ using var chanel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChan
 
 });
 var client = new SendRequestToClient.SendRequestToClientClient(chanel);
-var reply = client.BidirectionalStream( new HelloRequest { Message = "clien-1" });
+var reply = client.BidirectionalStream(new HelloRequest { Message = "clien-1" });
 
 //// Recevied message from service 1
 //   Console.WriteLine("Responsing: " + reply.Message);
 Console.WriteLine("Press any key to exit...");
 Console.ReadKey();
+
