@@ -18,7 +18,7 @@ var firstMessage = new Service2SendData
 Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
 // Get string into quotes
 string pattern = "\"([^\"]*)\"";
-var channel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
+var channel = GrpcChannel.ForAddress("https://localhost:7146", new GrpcChannelOptions
 {
     HttpHandler = handler,
     
