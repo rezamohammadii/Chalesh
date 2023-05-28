@@ -1,11 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Chalesh.Core.Services;
 using Chalesh.Core.Utils;
 using Grpc.Net.Client;
 
 using GrpcClient;
 
 Console.WriteLine("Press any key to exit...");
-
+StoreDataService store = new StoreDataService();
 using var chanel = GrpcChannel.ForAddress("https://localhost:7146", new GrpcChannelOptions
 {
     HttpHandler = new SocketsHttpHandler
@@ -14,10 +15,10 @@ using var chanel = GrpcChannel.ForAddress("https://localhost:7146", new GrpcChan
         EnableMultipleHttp2Connections = true,
 
         // Set Max Connection from receive data main service 
-        MaxConnectionsPerServer = CodeFactory.modelOut.NumberOfActiveClients,
+        MaxConnectionsPerServer = store.GetMainServiceDataOut().NumberOfActiveClients,
 
         // After next time cloese connection 
-        ConnectTimeout = TimeSpan.FromSeconds(CodeFactory.modelOut.ExpirationTime),
+        ConnectTimeout = TimeSpan.FromSeconds(store.GetMainServiceDataOut().ExpirationTime),
 
     },
 

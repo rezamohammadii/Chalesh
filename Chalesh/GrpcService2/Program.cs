@@ -2,6 +2,7 @@
 using Chalesh.Core.Utils;
 using Grpc.Net.Client;
 using GrpcService2;
+using Newtonsoft.Json.Linq;
 
 var handler = new HttpClientHandler();
 
@@ -16,6 +17,12 @@ var firstMessage = new Service2SendData
     Type = "EngineType"
 };
 Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+JObject obj = new JObject(File.ReadAllText("/appsettings.json"));
+for (int i = 0; i < obj.Count; i++)
+{
+    keyValuePairs.Add(obj["Types"]["t"].ToString(), "");
+}
+
 // Get string into quotes
 string pattern = "\"([^\"]*)\"";
 var channel = GrpcChannel.ForAddress("https://localhost:7146", new GrpcChannelOptions
@@ -32,7 +39,7 @@ var serverReply = await request1.FirstRequestService2Async(firstMessage);
 // 
 while (true)
 {
-    var req2 = new Empty { };
+    var req2 = new DataService2ToServic1 {Engine = keyValuePairs.Keys.First(), Id = 123, MessageLenght = "10", IsValid = true  };
     var request2 = new SendRequestService2.SendRequestService2Client(channel);
 
     var serverReply2 = await request2.RequestService2Async(req2);

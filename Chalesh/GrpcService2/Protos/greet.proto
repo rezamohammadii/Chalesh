@@ -10,7 +10,7 @@ service ValidService2 {
 }
 // Subsequent service2 requests to service1
 service SendRequestService2 {
-    rpc RequestService2(Empty) returns (DataService1ToServic2);
+    rpc RequestService2(DataService2ToServic1) returns (DataService1ToServic2);
 }
 
 // Subsequent service1 requests to service2
@@ -22,6 +22,7 @@ message Service2SendData{
     string id = 1;
     string type = 2;
 }
+
 message DataService1ToServic2{
     int32 id = 123;
     string sender = 1234;
