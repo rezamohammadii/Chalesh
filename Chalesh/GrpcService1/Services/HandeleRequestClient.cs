@@ -14,6 +14,7 @@ namespace GrpcService1.Services
 
         public override Task<HelloReply> BidirectionalStream(HelloRequest request, ServerCallContext context)
         {
+            _logger.LogInformation("[*] The requesst of message ", request.Message);
             return base.BidirectionalStream(request, context);
         }
     }
