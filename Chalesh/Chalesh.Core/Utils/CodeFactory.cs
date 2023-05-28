@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Chalesh.Core.Utils
@@ -13,9 +14,7 @@ namespace Chalesh.Core.Utils
     public class CodeFactory
     {
         // Global variable 
-        public static MainServiceDataModelOut? modelOut;
-        public static ConcurrentQueue<Service2DetailModel>? Service2Detail;
-        public static ConsumerModel? ConsumerModels;
+        
 
         public static Guid GenerateGuidFromMacAddress()
         {
@@ -38,6 +37,12 @@ namespace Chalesh.Core.Utils
             hash[8] = (byte)((hash[8] & 0x3f) | 0x80);
 
             return new Guid(hash);
+        }
+        public static string GetSpecificStingWithRegex(string msg, string pattern)
+        {
+            Regex regex = new Regex(pattern);
+            string st = regex.Match(msg).Groups[0].Value;
+            return st;
         }
     }
 }

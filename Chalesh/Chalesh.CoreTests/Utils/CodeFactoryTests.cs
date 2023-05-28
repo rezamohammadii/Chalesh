@@ -16,7 +16,7 @@ namespace Chalesh.Core.Utils.Tests
         public void GenerateGuidFromMacAddressTest()
         {
             var guid = CodeFactory.GenerateGuidFromMacAddress();
-              Assert.AreNotEqual(guid, Guid.Empty);
+            Assert.AreNotEqual(guid, Guid.Empty);
         }
         [TestMethod()]
         public void ProducerTest()
@@ -34,5 +34,17 @@ namespace Chalesh.Core.Utils.Tests
             kafka.Listen(Console.WriteLine, "my-app");
         }
 
+        [TestMethod()]
+        public void GetSpecificStingWithRegexTest()
+        {
+            Dictionary<string, string> results = new();
+            results["test@example.com"] = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            results["http://example.com"] = @"^(http|https):\/\/[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}(:[0-9]{1,5})?(\/.*)?$";
+            results["abc123xyz"] = @"\d+";
+            foreach (var input in results)
+            {
+                Assert.IsNotNull(CodeFactory.GetSpecificStingWithRegex(input.Key, input.Value));
+            }
+        }
     }
 }
