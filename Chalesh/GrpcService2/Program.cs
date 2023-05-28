@@ -20,11 +20,10 @@ Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
 JObject obj = new JObject(File.ReadAllText("/appsettings.json"));
 for (int i = 0; i < obj.Count; i++)
 {
-    keyValuePairs.Add(obj["Types"]["t"].ToString(), "");
+    keyValuePairs.Add(obj["Types"]["RegexName"].ToString(), obj["Types"]["Pattern"].ToString());
 }
 
 // Get string into quotes
-string pattern = "\"([^\"]*)\"";
 var channel = GrpcChannel.ForAddress("https://localhost:7146", new GrpcChannelOptions
 {
     HttpHandler = handler,
@@ -43,8 +42,9 @@ while (true)
     var request2 = new SendRequestService2.SendRequestService2Client(channel);
 
     var serverReply2 = await request2.RequestService2Async(req2);
-    keyValuePairs.Add(serverReply2.Message, pattern);
+    foreach (var item in keyValuePairs)
+    {
+        CodeFactory.GetSpecificStingWithRegex(item.Key, item.Value);
 
-   // var request3 = new 
-
+    } 
 }
