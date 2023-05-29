@@ -44,7 +44,7 @@ while (true)
     var serverReply2 = await request2.RequestService2Async(req2);
     foreach (var item in keyValuePairs)
     {
-        CodeFactory.GetSpecificStingWithRegex(item.Key, item.Value);
+        CodeFactory.GetSpecificStingWithRegex(serverReply2.Message, item.Value);
 
     } 
 }

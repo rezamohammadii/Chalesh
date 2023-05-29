@@ -14,7 +14,7 @@ namespace Chalesh.Core.Services
     public class KafkaService : IKafkaService
     {
 
-        public void Listen(Action<string> message, string topic)
+        public void Listen(Action<string> message, string topic, CancellationToken cancellation)
         {
             var config = new Dictionary<string, object>
             {
@@ -29,6 +29,10 @@ namespace Chalesh.Core.Services
                 {
                     message(msg.Value);
                 };
+                while (!cancellation.IsCancellationRequested)
+                {
+                    consumer.Poll(100);
+                }
             }
         }
 

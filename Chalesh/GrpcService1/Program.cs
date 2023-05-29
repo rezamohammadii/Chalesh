@@ -5,6 +5,7 @@ using Grpc.Net.Client;
 using GrpcService1;
 using GrpcService1.Services;
 using Newtonsoft.Json;
+using rpcService1.Services;
 using System.Text;
 
 public class Program
@@ -19,11 +20,12 @@ public class Program
 
         builder.Services.AddSingleton<IStoreData, StoreDataService>();
         builder.Services.AddSingleton<IKafkaService, KafkaService>();
-
+        builder.Services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
         var app = builder.Build();
 
         // Handle background service for healthcheck
         builder.Services.AddHostedService<HealthCheckService>();
+        builder.Services.AddHostedService<ConsumeScopedServiceHostedService>();
 
 
         // Configure the HTTP request pipeline.
